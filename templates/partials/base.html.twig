@@ -1,0 +1,60 @@
+{% set extension = config.theme.production ? '.min' : '' %}
+<!DOCTYPE html>
+<html class="h-full" lang="{{ (grav.language.getActive ?: grav.config.site.default_lang)|e }}">
+    <head>
+        {% block head %}
+            <meta charset="utf-8" />
+            <title>{% if header.title %}{{ header.title|e }} | {% endif %}{{ site.title|e }}</title>
+
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            {% include 'partials/metadata.html.twig' %}
+
+            <link rel="icon" type="image/png" href="{{ url('theme://images/favicon.png')|e }}" />
+            <link rel="canonical" href="{{ page.url(true, true)|e }}" />
+        {% endblock head %}
+
+        {% block stylesheets %}
+            {% do assets.addCss('theme://css/output' ~ extension ~ '.css', 100) %}
+        {% endblock %}
+
+        {% block javascripts %}
+            {% do assets.addJs('theme://js/main' ~ extension ~ '.js', 100) %}
+        {% endblock %}
+
+        {% block assets deferred %}
+        {{ assets.css()|raw }}
+        {{ assets.js()|raw }}
+        {% endblock %}
+    </head>
+
+    <body id="top" class="pt-[75px] h-full {{ page.header.body_classes|e }} {{ config.theme.production ?: 'debug-screens' }}">       
+
+        {% block header %}
+            {% include 'partials/header.html.twig' %}
+        {% endblock %}
+        
+
+        <aside id="sidebar" class="fixed top-[69px] left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+            {% include 'partials/sidebar.html.twig' %}
+        </aside>
+
+        <div class="p-4 sm:ml-64 flex flex-col justify-between h-full">
+            {% block body %}
+                <div class="p-4">
+                    {% block content %}{% endblock %}
+                </div>
+            {% endblock %}
+
+            {% block footer %}
+                <footer class="bg-white rounded-lg shadow mt-4 dark:bg-gray-800">
+                    {% include 'partials/footer.html.twig' %}
+                </footer>
+            {% endblock %}
+        </div>
+
+        {% block bottom %}
+            {{ assets.js('bottom')|raw }}
+        {% endblock %}
+    </body>
+</html>
